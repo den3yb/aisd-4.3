@@ -63,7 +63,7 @@ public:
 		}
 	}
 
-	vector<Vertex> vertices() const {
+	vector<Vertex> vertice() const {
 		return _vert;
 	}
 
@@ -94,7 +94,7 @@ public:
 		for (int i = 0; i < _edg.size(); i++) {
 			if (_edg[i].from == from && _edg[i].to == to)
 				_edg.erase(_edg.begin() + i);
-			return true;
+				return true;
 		}
 		return false;
 	}
@@ -141,8 +141,8 @@ public:
 	}
 
 	Distance shorted_path(const Vertex& start, const Vertex& finish) {
-		
-		vector<Vertex> unvisit = vertices();
+
+		vector<Vertex> unvisit = vertice();
 		map<Vertex, Distance> shortest;
 
 		for (const Vertex& v : unvisit) {
@@ -175,12 +175,12 @@ public:
 				}
 			}
 			int i = 0;
-			while (i < unvisit.size()){
+			while (i < unvisit.size()) {
 				if (unvisit[i] == current) {
 					break;
 				}
 				i++;
-			 }
+			}
 			unvisit.erase(unvisit.begin() + i);
 		}
 		return shortest[finish];
@@ -192,7 +192,38 @@ public:
 		vector<Vertex> res;
 
 		while (!que.empty()) {
-
+			Vertex temp = que.front();
+			if (std::find(begin(res), end(res), temp) == end(res)){
+				res.push(temp);
+				vector<Vertex> current = vertices(temp);
+				for (const Vertex c : current) {
+					que.push(c);
+				}
+			}
+			que.pop();
 		}
+
+		return res;
+	}
+
+	Vertex find_mid_max() {
+		Distance help = 0;
+		Vertex result;
+		for (const Vertex temp : _vert) {
+			Distance mid = 0;
+			int count = 0;
+			for (const auto& edge : _edg) {
+				if (edge.from == temp || edge.to == temp) {
+					mid += edge.dist;
+					count++;
+				}
+			}
+			mid = mid / count;
+			if (mid > help) {
+				help = mid;
+				result = temp;
+			}
+		}
+		return result;
 	}
 };
