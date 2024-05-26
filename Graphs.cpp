@@ -1,7 +1,7 @@
 #pragma once
 #include <vector> 
 #include <iostream> 
-#include <set> 
+#include <queue> 
 #include <iterator> 
 #include <algorithm> 
 #include <limits> 
@@ -50,13 +50,13 @@ public:
 
 		for (int i = 0; i < _edg.size(); i++) {
 			if (_edg[i].to == vert || _edg[i].from == vert) {
-				remov e_edge(_edg[i]);
-				i--
+				 _edg.erase(_edg[i]);
+				i--;
 			}
 		}
 
 		for (int i = 0; i < _vert.size(); i++) {
-			if (_vert[i] == v) {
+			if (_vert[i] == vert) {
 				_vert.erase(_vert.begin() + i);
 				return true;
 			}
@@ -64,7 +64,7 @@ public:
 	}
 
 	vector<Vertex> vertices() const {
-		return _vertices;
+		return _vert;
 	}
 
 	bool has_edge(const Vertex& from, const Vertex& to) const {
@@ -93,7 +93,7 @@ public:
 	bool remove_edge(const Vertex& from, const Vertex& to) {
 		for (int i = 0; i < _edg.size(); i++) {
 			if (_edg[i].from == from && _edg[i].to == to)
-				_edg.erase(_edges.begin() + i);
+				_edg.erase(_edg.begin() + i);
 			return true;
 		}
 		return false;
@@ -127,19 +127,72 @@ public:
 		return res;
 	}
 
-	vector<edge<Vertex, Distance>> shorted_path(const Vertex& start, const Vertex& to) {
+	vector<Vertex> vertices(const Vertex& start) const {
+
+		vector<Vertex> res;
+
+		vector<edge<Vertex, Distance>> e = edges(start);
+
+		for (const auto& edge : e) {
+			res.push_back(edge.to);
+		}
+
+		return res;
+	}
+
+	Distance shorted_path(const Vertex& start, const Vertex& finish) {
 		
 		vector<Vertex> unvisit = vertices();
 		map<Vertex, Distance> shortest;
 
-		for (const Vertex& v : invisit) {
+		for (const Vertex& v : unvisit) {
 			shortest[v] = numeric_limits<Distance>::max();
 		}
 		shortest[start] = 0;
 
 		while (!unvisit.empty()) {
+			Vertex current = unvisit[0];
+			for (const Vertex v : unvisit) {
+				if (shortest[v] < shortest[current]) {
+					current = v;
+				}
+			}
+
+			vector<Vertex> near = vertices(current);
+			for (const Vertex n : near) {
+
+				Distance d;
+
+				for (const auto edge : _edg) {
+					if (edge.from = current && edge.to == n) {
+						d = edge.dist;
+					}
+				}
+
+				Distance temp = shortest[current] + d;
+				if (temp < shortest[n]) {
+					shortest[n] = temp;
+				}
+			}
+			int i = 0;
+			while (i < unvisit.size()){
+				if (unvisit[i] == current) {
+					break;
+				}
+				i++;
+			 }
+			unvisit.erase(unvisit.begin() + i);
+		}
+		return shortest[finish];
+	}
+
+	vector<Vertex> walk(const Vertex& start_vertex) const {
+		queue<Vertex> que;
+		que.push(start_vertex);
+		vector<Vertex> res;
+
+		while (!que.empty()) {
 
 		}
-
 	}
 };
